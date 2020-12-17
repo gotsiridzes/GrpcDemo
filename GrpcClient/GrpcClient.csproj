@@ -6,11 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\customers.proto" />
-    <None Remove="Protos\greet.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.34.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.34.0" />
@@ -21,8 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\customers.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" ProtoCompile="true" />
+    <Protobuf Include="..\GrpcServer\Protos\customers.proto" GrpcServices="Client">
+      <Link>Protos\customers.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\GrpcServer\Protos\greet.proto" GrpcServices="Client">
+      <Link>Protos\greet.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>
