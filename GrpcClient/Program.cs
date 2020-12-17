@@ -25,21 +25,21 @@ namespace GrpcClient
             
                 var customerClient = new Customer.CustomerClient(channel);
                 var customerRequest = new CustomerLookupModel { UserId = 1 };
-                var customerResponse = await customerClient.GetCustomerInfoAsync(customerRequest);
+                var customerResponse = await customerClient.GetCustomerAsync(customerRequest);
             
                 Console.WriteLine("First Customer:");
-                Console.WriteLine($"\t{customerResponse.FirstName} {customerResponse.LastName} {customerResponse.Age}");
+                Console.WriteLine($"{customerResponse.FirstName} {customerResponse.LastName} {customerResponse.Age}");
                 Console.WriteLine();
 
-                Console.WriteLine("New Customers\n***\n");
-
-                using (var call = customerClient.GetNewCustomer(new NewCustomerRequest()))
+                Console.WriteLine("All Customers\n***\n");
+                Console.WriteLine("Server Streaming ...");
+                using (var call = customerClient.GetAll(new NewCustomerRequest()))
                 {
 
                     await foreach (var item in call.ResponseStream.ReadAllAsync())
                     {
                         var currentCustomer = call.ResponseStream.Current;
-                        Console.WriteLine($"\t{currentCustomer.Id} - {currentCustomer.FirstName} {currentCustomer.LastName}: {currentCustomer.EmailAddress}");
+                        Console.WriteLine($"{currentCustomer.Id} - {currentCustomer.FirstName} {currentCustomer.LastName}: {currentCustomer.EmailAddress}");
                     }
 
                     //while (await call.ResponseStream.MoveNext())
@@ -48,9 +48,33 @@ namespace GrpcClient
                     //    Console.WriteLine($"\t{currentCustomer.Id} - {currentCustomer.FirstName} {currentCustomer.LastName}: {currentCustomer.EmailAddress}");
                     //}
                 }
+
+                Console.WriteLine("Adding Customers");
+                Console.WriteLine("Client Streaming");
+
+                var call2 = customerClient.AddCustomer();
+
+                for (int i = 0; i < 10000; i++)
+                {
+                    var rnd = new Random();
+                    await call2.RequestStream.WriteAsync(
+                        new CustomerModel
+                        {
+                            Id = rnd.Next(),
+                            Age = rnd.Next(20, 100),
+                            EmailAddress = $"test{rnd.Next()}@gmail.com"
+                        });
+
+                }
+                await call2.RequestStream.CompleteAsync();
+
+                
+                Console.WriteLine(call2.ResponseAsync.Result.Count);
+                Console.WriteLine("Press any key to continue...");
+
             }
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
     }
 }

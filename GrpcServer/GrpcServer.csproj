@@ -17,4 +17,8 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.32.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GrpcServer.Data\GrpcServer.Data.csproj" />
+  </ItemGroup>
+
 </Project>

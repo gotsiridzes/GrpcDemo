@@ -3,8 +3,13 @@ syntax = "proto3";
 option csharp_namespace = "GrpcServer";
 
 service Customer {
-	rpc GetCustomerInfo (CustomerLookupModel) returns (CustomerModel);
-	rpc GetNewCustomer (NewCustomerRequest) returns (stream CustomerModel);
+	rpc GetCustomer (CustomerLookupModel) returns (CustomerModel);
+	rpc GetAll (NewCustomerRequest) returns (stream CustomerModel);
+	rpc AddCustomer (stream CustomerModel) returns (AddCustomerResponse);
+}
+
+message AddCustomerResponse{
+	int32 count = 1;
 }
 
 message NewCustomerRequest{
